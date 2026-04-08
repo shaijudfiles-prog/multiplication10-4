@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Heebo', Arial, sans-serif; background: #1a1a2e; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+#progress-bar { height: 5px; background: linear-gradient(90deg, #34d399, #60a5fa); transition: width .4s ease; flex-shrink: 0; }
+#counter { position: absolute; top: 12px; left: 16px; font-size: 0.78em; color: #ffffff70; font-weight: 700; z-index: 10; }
+
+#stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.slide { display: none; width: 100%; height: 100%; padding: 22px 40px; flex-direction: column; justify-content: center; align-items: center; text-align: center; animation: fadeIn .3s ease; overflow-y: auto; }
+.slide.active { display: flex; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.bg-green  { background: radial-gradient(ellipse at 50% 0%, #0f3d1f 0%, #1a1a2e 70%); }
+.bg-blue   { background: radial-gradient(ellipse at 50% 0%, #1e3a6e 0%, #1a1a2e 70%); }
+.bg-teal   { background: radial-gradient(ellipse at 50% 0%, #0f4a4a 0%, #1a1a2e 70%); }
+.bg-purple { background: radial-gradient(ellipse at 50% 0%, #3b1f6a 0%, #1a1a2e 70%); }
+.bg-orange { background: radial-gradient(ellipse at 50% 0%, #5a2800 0%, #1a1a2e 70%); }
+.bg-dark   { background: radial-gradient(ellipse at 50% 0%, #252540 0%, #1a1a2e 70%); }
+.bg-indigo { background: radial-gradient(ellipse at 50% 0%, #1e1b4b 0%, #1a1a2e 70%); }
+.bg-emerald{ background: radial-gradient(ellipse at 50% 0%, #064e3b 0%, #1a1a2e 70%); }
+
+.big-title { font-size: 2.4em; font-weight: 900; line-height: 1.2; margin-bottom: 10px; }
+.big-sub   { font-size: 1.05em; color: #bbb; margin-bottom: 18px; }
+.chip { display: inline-block; background: #ffffff20; border: 1.5px solid #ffffff35; border-radius: 20px; padding: 4px 14px; font-size: 0.8em; margin: 3px; color: #ddd; }
+.sec-label { font-size: 0.76em; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: .65; }
+
+.glow-green  { color: #86efac; text-shadow: 0 0 18px #22c55e99; }
+.glow-blue   { color: #93c5fd; text-shadow: 0 0 18px #3b82f699; }
+.glow-purple { color: #c084fc; text-shadow: 0 0 18px #9333ea99; }
+.glow-orange { color: #fdba74; text-shadow: 0 0 18px #f9731699; }
+.glow-teal   { color: #5eead4; text-shadow: 0 0 18px #0d948899; }
+
+/* math always LTR */
+.math { direction: ltr; display: inline-block; font-weight: 900; unicode-bidi: embed; }
+.math-box { direction: ltr; background: #ffffff12; border: 2px solid #ffffff25; border-radius: 12px; padding: 11px 20px; margin: 7px auto; font-size: 1.35em; font-weight: 900; max-width: 480px; width: 100%; unicode-bidi: embed; }
+.math-box.green-b  { border-color: #4ade80; background: #4ade8015; }
+.math-box.blue-b   { border-color: #60a5fa; background: #60a5fa15; }
+.math-box.purple-b { border-color: #a855f7; background: #a855f718; }
+
+/* persona cards */
+.persona-cards { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 12px; width: 100%; max-width: 700px; }
+.persona { background: #ffffff10; border: 2px solid #ffffff22; border-radius: 14px; padding: 14px 18px; flex: 1; min-width: 190px; max-width: 220px; text-align: right; }
+.persona .name { font-size: 0.82em; font-weight: 900; margin-bottom: 6px; }
+.persona .body { font-size: 0.85em; color: #ccc; line-height: 1.55; }
+.persona .meq  { direction: ltr; font-weight: 900; color: #86efac; margin-top: 5px; font-size: 0.95em; display: block; unicode-bidi: embed; }
+
+/* rule pills */
+.rule-row { display: flex; gap: 10px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.rule-pill { border-radius: 50px; padding: 10px 22px; font-size: 0.97em; font-weight: 900; }
+.rp1 { background: #1d4ed828; border: 2px solid #60a5fa; color: #bfdbfe; }
+.rp2 { background: #7c3aed25; border: 2px solid #a855f7; color: #e9d5ff; }
+.rp3 { background: #15803d25; border: 2px solid #4ade80; color: #bbf7d0; }
+
+/* pair table */
+.pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 560px; margin: 12px auto 0; width: 100%; }
+.pair-box { background: #ffffff0e; border: 1.5px solid #ffffff22; border-radius: 10px; padding: 12px 16px; }
+.pair-box .ptag { font-size: 0.72em; color: #aaa; margin-bottom: 5px; }
+.pair-box .peq  { direction: ltr; font-weight: 900; font-size: 1em; unicode-bidi: embed; }
+.pair-box .peq.mul { color: #86efac; }
+.pair-box .peq.div { color: #93c5fd; }
+
+/* game number display */
+.game-num { font-size: 3.5em; font-weight: 900; color: #fde68a; margin: 10px 0; }
+.check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; margin: 10px auto; width: 100%; }
+.check-item { background: #ffffff0e; border: 1.5px solid #ffffff22; border-radius: 10px; padding: 10px 16px; }
+.check-item .ci-q { font-size: 0.85em; color: #ccc; margin-bottom: 6px; direction: ltr; font-weight: 700; unicode-bidi: embed; }
+.check-item .ci-btns { display: flex; gap: 8px; }
+.ci-btn { padding: 5px 14px; border-radius: 8px; border: 2px solid; font-weight: 900; font-size: 0.88em; cursor: pointer; font-family: inherit; transition: all .15s; opacity: .5; }
+.ci-btn.sel { opacity: 1; }
+.ci-btn.yes { border-color: #4ade80; color: #86efac; background: #4ade8012; }
+.ci-btn.no  { border-color: #f87171; color: #fca5a5; background: #f8717112; }
+.ci-btn.correct { background: #22c55e !important; color: #fff !important; border-color: #22c55e !important; opacity: 1 !important; }
+.ci-btn.wrong   { background: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; opacity: 1 !important; }
+
+/* reveal list */
+.reveal-list { list-style: none; padding: 0; margin-top: 8px; width: 100%; max-width: 500px; }
+.reveal-list li { background: #ffffff10; border: 1.5px solid #ffffff20; border-radius: 10px; padding: 11px 16px; margin-bottom: 7px; cursor: pointer; transition: background .2s; }
+.reveal-list li:hover { background: #ffffff18; }
+.reveal-list li.shown { background: #22c55e20; border-color: #4ade80; }
+.reveal-list li .eq     { direction: ltr; font-size: 1em; font-weight: 900; color: #e9d5ff; unicode-bidi: embed; }
+.reveal-list li .ans    { direction: ltr; display: none; margin-top: 5px; font-weight: 900; color: #86efac; font-size: 1em; unicode-bidi: embed; }
+.reveal-list li.shown .ans { display: block; }
+.reveal-list li .prompt { font-size: 0.76em; color: #aaa; margin-top: 3px; }
+
+/* task */
+.task-box { background: #ffffff0c; border: 2px dashed #34d399; border-radius: 16px; padding: 18px 24px; max-width: 580px; width: 100%; margin: 8px auto; text-align: right; }
+.task-step { background: #ffffff0f; border-radius: 9px; padding: 9px 13px; margin-bottom: 7px; }
+.task-step .label { font-size: 0.8em; color: #6ee7b7; font-weight: 700; margin-bottom: 3px; }
+.task-step .tmath  { direction: ltr; font-size: 1.1em; font-weight: 900; color: #a7f3d0; display: block; unicode-bidi: embed; }
+
+/* self-practice */
+.pinp { direction: ltr; width: 72px; padding: 4px 6px; border: 2px solid #ffffff30; border-radius: 7px; font-size: 0.95em; font-weight: 700; text-align: center; font-family: inherit; background: #ffffff0a; color: #fff; -moz-appearance: textfield; }
+.pinp::-webkit-outer-spin-button,.pinp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.pinp:focus { outline: none; border-color: #4ade80; }
+.pfb { font-size: 0.8em; font-weight: 700; display: inline-block; min-width: 20px; direction: ltr; }
+.prow { direction: ltr; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.95em; margin-bottom: 7px; unicode-bidi: embed; }
+.prow.ok  .pinp { border-color: #22c55e; background: #22c55e18; }
+.prow.err .pinp { border-color: #ef4444; background: #ef444418; }
+
+.think { background: #ffffff0f; border: 1.5px solid #ffffff20; border-radius: 10px; padding: 9px 16px; margin: 8px auto; max-width: 500px; font-size: 0.9em; color: #ccc; }
+.emoji-huge { font-size: 3.4em; margin-bottom: 8px; line-height: 1; }
+.reactions { display: flex; gap: 14px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.react-btn { font-size: 1.7em; background: #ffffff10; border: 2px solid #ffffff20; border-radius: 13px; padding: 9px 16px; cursor: pointer; transition: transform .2s, background .2s; font-family: inherit; color: #fff; }
+.react-btn:hover { transform: scale(1.15); background: #ffffff1e; }
+
+#nav { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 10px 0; background: #13132a; border-top: 1px solid #ffffff12; flex-shrink: 0; }
+.nav-btn { background: #ffffff15; border: 1.5px solid #ffffff25; color: #fff; border-radius: 50px; padding: 7px 24px; font-size: 0.88em; font-weight: 700; cursor: pointer; font-family: inherit; transition: background .2s; }
+.nav-btn:hover { background: #ffffff25; }
+.nav-btn:disabled { opacity: .3; cursor: default; }
+#slide-dots { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: 320px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #ffffff30; transition: all .3s; cursor: pointer; }
+.dot.active { background: #34d399; transform: scale(1.4); }
+</style>
+</head>
+<body>
+
+<div id="progress-bar" style="width:0%"></div>
+<div id="counter">1 / 14</div>
+<div id="stage">
+
+<!-- 1: TITLE -->
+<div class="slide bg-emerald active">
+  <div class="emoji-huge">⛏️</div>
+  <div class="big-title">חילוק ב-<span class="glow-blue">10</span>, <span class="glow-teal">100</span>, <span class="glow-green">1,000</span></div>
+  <div class="big-sub">שיעור 3 — הקשר בין כפל לחילוק | Minecraft!</div>
+  <div>
+    <span class="chip">⏱ 30 דקות</span>
+    <span class="chip">📡 Google Meet</span>
+    <span class="chip">🧠 כיתה ד'</span>
+  </div>
+</div>
+
+<!-- 2: WARMUP -->
+<div class="slide bg-blue">
+  <div class="sec-label glow-blue">🔁 חזרה מהיר</div>
+  <div class="big-title" style="font-size:1.85em;">זוכרים את כלל הכפל?</div>
+  <p style="color:#bbb; margin-bottom:12px;">ענו בצ'אט — מי ראשון? 🏃</p>
+  <div class="math-box green-b">36 × 10 = ?</div>
+  <div class="math-box blue-b">15 × 100 = ?</div>
+  <div class="math-box purple-b">8 × 1,000 = ?</div>
+  <div class="think" style="margin-top:10px;">💡 היום נלמד את הכיוון ההפוך — חילוק!</div>
+</div>
+
+<!-- 3: MINECRAFT OPENER -->
+<div class="slide bg-green">
+  <div class="emoji-huge">⛏️</div>
+  <div class="sec-label">פתיחה</div>
+  <div class="big-title" style="font-size:1.9em;">בניית עולם <span class="glow-green">Minecraft</span></div>
+  <div class="task-box" style="border-color:#4ade80; text-align:center;">
+    <p style="font-size:1em; margin-bottom:12px;">רנה מקבלת <strong style="color:#86efac;">200 Minecraft coins</strong> מכל דוד 🪙</p>
+    <div class="task-step">
+      <div class="label">יש לרנה 20 דודים — כמה coins בסך הכל?</div>
+      <span class="tmath">20 × 100 = ? coins</span>
+    </div>
+    <div class="task-step">
+      <div class="label">עכשיו הפוך — יש לה 2,000 coins, כל דוד נתן 100. כמה דודים?</div>
+      <span class="tmath">2,000 ÷ 100 = ? דודים</span>
+    </div>
+  </div>
+  <div class="think">💬 כתבו את שתי התשובות בצ'אט!</div>
+</div>
+
+<!-- 4: THREE APPROACHES -->
+<div class="slide bg-teal">
+  <div class="sec-label glow-teal">📖 הסבר — נקודה א'</div>
+  <div class="big-title" style="font-size:1.65em;">שלוש דרכים לפתור <span class="math" style="color:#5eead4;">3,700 ÷ 100</span></div>
+  <div class="persona-cards">
+    <div class="persona" style="border-color:#a855f7;">
+      <div class="name" style="color:#c084fc;">👧 דליה</div>
+      <div class="body">חושבת על כרטיסי 100:<br>כמה כרטיסים צריך?</div>
+      <span class="meq">37 × 100 = 3,700<br>∴ 3,700 ÷ 100 = 37</span>
+    </div>
+    <div class="persona" style="border-color:#60a5fa;">
+      <div class="name" style="color:#93c5fd;">👦 הדר</div>
+      <div class="body">מדמיין ציר מספרים וקפיצות של 100 מאפס:</div>
+      <span class="meq">37 קפיצות של 100<br>= 3,700</span>
+    </div>
+    <div class="persona" style="border-color:#34d399;">
+      <div class="name" style="color:#86efac;">👦 טל</div>
+      <div class="body">פותר משוואת כפל מתאימה:</div>
+      <span class="meq">____ × 100 = 3,700<br>∴ 37 × 100 = 3,700</span>
+    </div>
+  </div>
+  <div class="think" style="margin-top:10px;">💬 באיזו שיטה אתם הכי אוהבים להשתמש?</div>
+</div>
+
+<!-- 5: THE RULE -->
+<div class="slide bg-emerald">
+  <div class="sec-label">📖 הסבר — נקודה ב'</div>
+  <div class="big-title" style="font-size:1.9em;">חילוק = <span class="glow-green">כפל הפוך</span></div>
+  <p style="color:#bbb; margin-bottom:4px;">הכלל פשוט — הפוך מה שלמדנו!</p>
+  <div class="rule-row">
+    <div class="rule-pill rp1"><span class="math">÷ 10</span> → הסר <span class="math">0</span> אחד</div>
+    <div class="rule-pill rp2"><span class="math">÷ 100</span> → הסר <span class="math">00</span> שניים</div>
+    <div class="rule-pill rp3"><span class="math">÷ 1,000</span> → הסר <span class="math">000</span> שלושה</div>
+  </div>
+  <div class="think" style="margin-top:14px;">⚠️ <strong>חשוב!</strong> הכלל עובד רק כשהמספר מתחלק בדיוק — כלומר מסתיים באפסים המתאימים</div>
+  <div class="think" style="margin-top:6px;">
+    💬 תרגול מהיר בצ'אט:<br>
+    <span class="math">900 ÷ 10 = ? &nbsp;|&nbsp; 2,800 ÷ 100 = ? &nbsp;|&nbsp; 23,000 ÷ 1,000 = ?</span>
+  </div>
+</div>
+
+<!-- 6: DOUBLE CONNECTION -->
+<div class="slide bg-blue">
+  <div class="sec-label glow-blue">📖 הסבר — נקודה ג'</div>
+  <div class="big-title" style="font-size:1.75em;">הקשר <span class="glow-blue">הכפול</span> — × ו-÷</div>
+  <p style="color:#bbb; margin-bottom:4px; font-size:0.9em;">כל תרגיל כפל מייצר תרגיל חילוק! (תרגיל 19 עמ' 90)</p>
+  <div class="pair-grid">
+    <div class="pair-box">
+      <div class="ptag">× כפל</div>
+      <div class="peq mul">19 × 10 = 190</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">÷ חילוק</div>
+      <div class="peq div">190 ÷ 10 = 19</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">× כפל</div>
+      <div class="peq mul">33 × 100 = 3,300</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">÷ חילוק</div>
+      <div class="peq div">3,300 ÷ 100 = 33</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">× כפל</div>
+      <div class="peq mul">7 × 1,000 = 7,000</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">÷ חילוק</div>
+      <div class="peq div">7,000 ÷ 1,000 = 7</div>
+    </div>
+  </div>
+  <div class="think" style="margin-top:10px;">💬 ענו בצ'אט: <span class="math">45 × 100 = 4,500</span> — אז כמה יהיה <span class="math">4,500 ÷ 100</span>?</div>
+</div>
+
+<!-- 7: GAME TITLE + RULE -->
+<div class="slide bg-purple">
+  <div class="emoji-huge">🕵️</div>
+  <div class="sec-label">משחק — כפל/חילוק מי אני?</div>
+  <div class="big-title" style="font-size:1.7em;">הסוד: <span class="glow-purple">הסתכלו על הסיומת!</span></div>
+  <div style="display:flex; flex-direction:column; gap:8px; max-width:460px; width:100%; margin:14px auto 0;">
+    <div style="background:#ffffff12; border:2px solid #4ade80; border-radius:12px; padding:11px 18px; direction:ltr; font-weight:900; font-size:1em;">
+      <span style="color:#86efac;">÷ 10</span> &nbsp;→&nbsp; המספר נגמר ב- <span style="color:#fde68a; font-size:1.2em;">0</span>
+    </div>
+    <div style="background:#ffffff12; border:2px solid #60a5fa; border-radius:12px; padding:11px 18px; direction:ltr; font-weight:900; font-size:1em;">
+      <span style="color:#93c5fd;">÷ 100</span> &nbsp;→&nbsp; המספר נגמר ב- <span style="color:#fde68a; font-size:1.2em;">00</span>
+    </div>
+    <div style="background:#ffffff12; border:2px solid #a855f7; border-radius:12px; padding:11px 18px; direction:ltr; font-weight:900; font-size:1em;">
+      <span style="color:#c084fc;">÷ 1,000</span> &nbsp;→&nbsp; המספר נגמר ב- <span style="color:#fde68a; font-size:1.2em;">000</span>
+    </div>
+  </div>
+  <div class="think" style="margin-top:12px;">⭐ על כל שורה נכונה — כוכב &nbsp;|&nbsp; 3 כוכבים = <strong>אלוף/ת החילוק!</strong> 🏆</div>
+</div>
+
+<!-- 8: GAME ROUND 1 -->
+<div class="slide bg-dark">
+  <div class="sec-label">🕵️ סיבוב 1 — הסתכלו על הסיומת!</div>
+  <div class="game-num">9<span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">2</span><span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">0</span></div>
+  <p style="color:#aaa; font-size:0.82em; margin-bottom:8px;">ספרה אחרונה: <span style="color:#fde68a; font-weight:900;">0</span> &nbsp;|&nbsp; שתי אחרונות: <span style="color:#fca5a5; font-weight:900;">20</span> &nbsp;|&nbsp; שלוש אחרונות: <span style="color:#fca5a5; font-weight:900;">920</span></p>
+  <div class="check-grid" id="g1">
+    <div class="check-item">
+      <div class="ci-q">÷ 1 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">כל מספר מתחלק ב-1</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g1','q1',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g1','q1',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 10 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-0?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g1','q2',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g1','q2',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 100 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-00?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g1','q3',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g1','q3',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 1,000 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-000?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g1','q4',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g1','q4',false)">✗ לא</button>
+      </div>
+    </div>
+  </div>
+  <button onclick="checkGame('g1',[true,true,false,false],['÷1 ✓ תמיד','÷10 ✓ נגמר ב-0 → 920÷10=92','÷100 ✗ נגמר ב-20 לא ב-00','÷1,000 ✗ נגמר ב-920 לא ב-000'])" style="margin-top:10px; padding:7px 22px; background:#34d399; color:#064e3b; border:none; border-radius:14px; font-weight:900; font-size:0.9em; cursor:pointer; font-family:inherit;">✔️ בדוק</button>
+  <div id="g1-fb" style="margin-top:8px; font-size:0.8em; color:#86efac; min-height:20px; direction:ltr; line-height:1.6;"></div>
+</div>
+
+<!-- 9: GAME ROUND 2 -->
+<div class="slide bg-dark">
+  <div class="sec-label">🕵️ סיבוב 2 — הסתכלו על הסיומת!</div>
+  <div class="game-num">2,00<span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">6</span></div>
+  <p style="color:#aaa; font-size:0.82em; margin-bottom:8px;">ספרה אחרונה: <span style="color:#fca5a5; font-weight:900;">6</span> &nbsp;|&nbsp; שתי אחרונות: <span style="color:#fca5a5; font-weight:900;">06</span> &nbsp;|&nbsp; שלוש אחרונות: <span style="color:#fca5a5; font-weight:900;">006</span></p>
+  <div class="check-grid" id="g2">
+    <div class="check-item">
+      <div class="ci-q">÷ 1 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">כל מספר מתחלק ב-1</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g2','q1',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g2','q1',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 10 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-0?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g2','q2',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g2','q2',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 100 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-00?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g2','q3',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g2','q3',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 1,000 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-000?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g2','q4',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g2','q4',false)">✗ לא</button>
+      </div>
+    </div>
+  </div>
+  <button onclick="checkGame('g2',[true,false,false,false],['÷1 ✓ תמיד','÷10 ✗ נגמר ב-6 לא ב-0','÷100 ✗ נגמר ב-06 לא ב-00','÷1,000 ✗ נגמר ב-006 לא ב-000'])" style="margin-top:10px; padding:7px 22px; background:#34d399; color:#064e3b; border:none; border-radius:14px; font-weight:900; font-size:0.9em; cursor:pointer; font-family:inherit;">✔️ בדוק</button>
+  <div id="g2-fb" style="margin-top:8px; font-size:0.8em; color:#86efac; min-height:20px; direction:ltr; line-height:1.6;"></div>
+</div>
+
+<!-- 10: GAME ROUND 3 -->
+<div class="slide bg-dark">
+  <div class="sec-label">🕵️ סיבוב 3 — הסתכלו על הסיומת!</div>
+  <div class="game-num">5,<span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">5</span><span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">0</span><span style="color:#fde68a; text-decoration:underline; text-underline-offset:6px;">0</span></div>
+  <p style="color:#aaa; font-size:0.82em; margin-bottom:8px;">ספרה אחרונה: <span style="color:#fde68a; font-weight:900;">0</span> &nbsp;|&nbsp; שתי אחרונות: <span style="color:#fde68a; font-weight:900;">00</span> &nbsp;|&nbsp; שלוש אחרונות: <span style="color:#fca5a5; font-weight:900;">500</span></p>
+  <div class="check-grid" id="g3">
+    <div class="check-item">
+      <div class="ci-q">÷ 1 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">כל מספר מתחלק ב-1</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g3','q1',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g3','q1',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 10 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-0?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g3','q2',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g3','q2',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 100 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-00?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g3','q3',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g3','q3',false)">✗ לא</button>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="ci-q">÷ 1,000 ?<br><span style="color:#aaa; font-size:0.8em; font-weight:400;">נגמר ב-000?</span></div>
+      <div class="ci-btns">
+        <button class="ci-btn yes" onclick="pick(this,'g3','q4',true)">✓ כן</button>
+        <button class="ci-btn no"  onclick="pick(this,'g3','q4',false)">✗ לא</button>
+      </div>
+    </div>
+  </div>
+  <button onclick="checkGame('g3',[true,true,true,false],['÷1 ✓ תמיד','÷10 ✓ נגמר ב-0 → 5,500÷10=550','÷100 ✓ נגמר ב-00 → 5,500÷100=55','÷1,000 ✗ נגמר ב-500 לא ב-000'])" style="margin-top:10px; padding:7px 22px; background:#34d399; color:#064e3b; border:none; border-radius:14px; font-weight:900; font-size:0.9em; cursor:pointer; font-family:inherit;">✔️ בדוק</button>
+  <div id="g3-fb" style="margin-top:8px; font-size:0.8em; color:#86efac; min-height:20px; direction:ltr; line-height:1.6;"></div>
+  <div class="think" style="margin-top:8px;">💬 דיון: מה המשותף לכל המספרים שמתחלקים ב-100?</div>
+</div>
+
+<!-- 11: TASK -->
+<div class="slide bg-orange">
+  <div class="emoji-huge">⛏️</div>
+  <div class="sec-label glow-orange">📝 משימה</div>
+  <div class="big-title" style="font-size:1.65em;">מחסן <span class="glow-orange">הבלוקים של Minecraft</span></div>
+  <div class="task-box">
+    <p style="font-size:0.93em; color:#6ee7b7; font-weight:700; margin-bottom:10px;">📦 במחסן ארוזים 100 בלוקים בכל חבילה.</p>
+    <div class="task-step">
+      <div class="label">שלב 1 — כמה חבילות צריך לבנות מבנה של 5,000 בלוקים?</div>
+      <span class="tmath">5,000 ÷ 100 = ____</span>
+    </div>
+    <div class="task-step">
+      <div class="label">שלב 2 — קנינו 10 חבילות. כמה בלוקים יש לנו?</div>
+      <span class="tmath">10 × 100 = ____</span>
+    </div>
+    <div style="border-top:1px solid #ffffff15; margin:8px 0 6px;"></div>
+    <div class="task-step" style="border:1.5px solid #6ee7b7;">
+      <div class="label" style="color:#a7f3d0;">🌟 אתגר</div>
+      <p style="font-size:0.87em; margin-bottom:5px; color:#ddd;">מצאו שתי אפשרויות:</p>
+      <span class="tmath">▲ × 100 = ● × 10</span>
+    </div>
+  </div>
+  <div class="think">⏱ עבדו לבד 4 דקות — אחר כך משתפים!</div>
+</div>
+
+<!-- 12: SUMMARY -->
+<div class="slide bg-emerald">
+  <div class="emoji-huge">✅</div>
+  <div class="sec-label">סיכום השיעור</div>
+  <div class="big-title" style="font-size:1.85em;">מה למדנו היום?</div>
+  <div class="rule-row">
+    <div class="rule-pill rp1"><span class="math">÷ 10</span> → הסר <span class="math">0</span></div>
+    <div class="rule-pill rp2"><span class="math">÷ 100</span> → הסר <span class="math">00</span></div>
+    <div class="rule-pill rp3"><span class="math">÷ 1,000</span> → הסר <span class="math">000</span></div>
+  </div>
+  <div class="pair-grid" style="margin-top:14px; max-width:420px;">
+    <div class="pair-box">
+      <div class="ptag">כפל</div>
+      <div class="peq mul">n × 10 = m</div>
+    </div>
+    <div class="pair-box">
+      <div class="ptag">חילוק</div>
+      <div class="peq div">m ÷ 10 = n</div>
+    </div>
+  </div>
+  <div class="think" style="margin-top:12px;">💬 תנו דוגמה מהחיים שלכם שבה משתמשים בחילוק ב-10 או ב-100</div>
+  <div class="reactions" style="margin-top:10px;">
+    <button class="react-btn" onclick="react('💪 תמשיכו לתרגל!')">😵</button>
+    <button class="react-btn" onclick="react('😊 יופי!')">😊</button>
+    <button class="react-btn" onclick="react('🏆 אלופים!')">🏆</button>
+  </div>
+  <div id="react-msg" style="margin-top:8px; font-size:0.95em; color:#86efac; min-height:20px;"></div>
+</div>
+
+<!-- 13: SELF PRACTICE -->
+<div class="slide bg-indigo" style="justify-content:flex-start; padding-top:16px; overflow-y:auto;">
+  <div class="sec-label" style="color:#a5b4fc; margin-bottom:4px;">📌 תרגול עצמי — עמ' 90–93</div>
+  <div class="big-title" style="font-size:1.4em; margin-bottom:4px;">בדקו את עצמכם! <span class="glow-green">⛏️</span></div>
+  <p style="color:#bbb; font-size:0.8em; margin-bottom:10px;">מספרים שונים מהחוברת — אותם כללים</p>
+
+  <div style="width:100%; max-width:620px; display:flex; flex-direction:column; gap:10px;">
+
+    <!-- Part A: division -->
+    <div style="background:#ffffff0d; border:1.5px solid #4ade8030; border-radius:12px; padding:12px 16px;">
+      <div style="font-size:0.78em; color:#86efac; font-weight:700; margin-bottom:8px;">א — חלוקה (כמו תרגיל 21 עמ' 92)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <div class="prow" id="pr_a1"><span>500 ÷ 10 =</span><input type="number" class="pinp" id="pa1" placeholder="?"><span class="pfb" id="pf_a1"></span></div>
+        <div class="prow" id="pr_a2"><span>800 ÷ 100 =</span><input type="number" class="pinp" id="pa2" placeholder="?"><span class="pfb" id="pf_a2"></span></div>
+        <div class="prow" id="pr_a3"><span>6,000 ÷ 1,000 =</span><input type="number" class="pinp" id="pa3" placeholder="?"><span class="pfb" id="pf_a3"></span></div>
+        <div class="prow" id="pr_a4"><span>4,500 ÷ 100 =</span><input type="number" class="pinp" id="pa4" placeholder="?"><span class="pfb" id="pf_a4"></span></div>
+        <div class="prow" id="pr_a5"><span>270 ÷ 10 =</span><input type="number" class="pinp" id="pa5" placeholder="?"><span class="pfb" id="pf_a5"></span></div>
+        <div class="prow" id="pr_a6"><span>18,000 ÷ 1,000 =</span><input type="number" class="pinp" id="pa6" placeholder="?"><span class="pfb" id="pf_a6"></span></div>
+      </div>
+    </div>
+
+    <!-- Part B: mixed × and ÷ -->
+    <div style="background:#ffffff0d; border:1.5px solid #60a5fa30; border-radius:12px; padding:12px 16px;">
+      <div style="font-size:0.78em; color:#93c5fd; font-weight:700; margin-bottom:8px;">ב — כפל וחילוק יחד (כמו תרגיל 24 עמ' 93)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <div class="prow" id="pr_b1"><span>56 × 100 =</span><input type="number" class="pinp" id="pb1" placeholder="?"><span class="pfb" id="pf_b1"></span></div>
+        <div class="prow" id="pr_b2"><span>5,600 ÷ 100 =</span><input type="number" class="pinp" id="pb2" placeholder="?"><span class="pfb" id="pf_b2"></span></div>
+        <div class="prow" id="pr_b3"><span>43 × 1,000 =</span><input type="number" class="pinp" id="pb3" placeholder="?"><span class="pfb" id="pf_b3"></span></div>
+        <div class="prow" id="pr_b4"><span>43,000 ÷ 1,000 =</span><input type="number" class="pinp" id="pb4" placeholder="?"><span class="pfb" id="pf_b4"></span></div>
+        <div class="prow" id="pr_b5"><span>140 × 10 =</span><input type="number" class="pinp" id="pb5" placeholder="?"><span class="pfb" id="pf_b5"></span></div>
+        <div class="prow" id="pr_b6"><span>1,400 ÷ 10 =</span><input type="number" class="pinp" id="pb6" placeholder="?"><span class="pfb" id="pf_b6"></span></div>
+      </div>
+    </div>
+
+    <!-- Check -->
+    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
+      <button onclick="checkPractice3()" style="padding:8px 24px; background:#22c55e; color:#fff; border:none; border-radius:14px; font-size:0.9em; font-weight:700; cursor:pointer; font-family:inherit;">✔️ בדוק הכל</button>
+      <div id="p3-score" style="font-weight:700; color:#86efac; font-size:0.92em;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 14: GOODBYE -->
+<div class="slide bg-emerald">
+  <div class="emoji-huge">🏆</div>
+  <div class="big-title">כל הכבוד!</div>
+  <div class="big-sub">סיימנו את יחידת הכפל והחילוק! 🎉</div>
+  <div class="think">📌 תרגול נוסף בדף העבודה האינטראקטיבי</div>
+  <div class="think" style="margin-top:6px;">📖 תרגיל 21 עמ' 92 + תרגיל 24 עמ' 93</div>
+</div>
+
+</div><!-- end stage -->
+
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" disabled>→ הקודם</button>
+  <div id="slide-dots"></div>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">הבא ←</button>
+</div>
+
+<script>
+const TOTAL = 14;
+let cur = 0;
+
+function buildDots() {
+  const c = document.getElementById('slide-dots');
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' active':'');
+    d.onclick = () => goTo(i);
+    c.appendChild(d);
+  }
+}
+
+function goTo(n) {
+  const slides = document.querySelectorAll('.slide');
+  const dots   = document.querySelectorAll('.dot');
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, TOTAL-1));
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('active');
+  document.getElementById('prevBtn').disabled = cur===0;
+  document.getElementById('nextBtn').disabled = cur===TOTAL-1;
+  document.getElementById('counter').textContent = (cur+1)+' / '+TOTAL;
+  document.getElementById('progress-bar').style.width = ((cur+1)/TOTAL*100)+'%';
+}
+function go(dir) { goTo(cur+dir); }
+
+// ---- GAME ----
+const gameState = {};
+function pick(btn, game, q, val) {
+  if (!gameState[game]) gameState[game] = {};
+  gameState[game][q] = val;
+  const item = btn.closest('.check-item');
+  item.querySelectorAll('.ci-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function checkGame(game, correctArr, explanations) {
+  const qs = ['q1','q2','q3','q4'];
+  let ok = 0;
+  qs.forEach((q, i) => {
+    const item = document.querySelectorAll(`#${game} .check-item`)[i];
+    const ans  = correctArr[i];
+    const sel  = gameState[game] && gameState[game][q];
+    const yBtn = item.querySelectorAll('.ci-btn')[0];
+    const nBtn = item.querySelectorAll('.ci-btn')[1];
+    yBtn.classList.remove('sel','correct','wrong');
+    nBtn.classList.remove('sel','correct','wrong');
+    if (sel === undefined) return;
+    const good = sel === ans;
+    if (sel === true)  yBtn.classList.add(good ? 'correct' : 'wrong');
+    if (sel === false) nBtn.classList.add(good ? 'correct' : 'wrong');
+    // show correct if wrong
+    if (!good) {
+      if (ans === true)  yBtn.classList.add('correct');
+      if (ans === false) nBtn.classList.add('correct');
+    }
+    if (good) ok++;
+  });
+  const fb = document.getElementById(game+'-fb');
+  fb.innerHTML = explanations.map((e,i) =>
+    `<span style="color:${correctArr[i]?'#86efac':'#fca5a5'};">${correctArr[i]?'✓':'✗'} ${e}</span>`
+  ).join(' &nbsp;|&nbsp; ');
+}
+
+// ---- SELF PRACTICE ----
+const pAns = {
+  pa1:50, pa2:8, pa3:6, pa4:45, pa5:27, pa6:18,
+  pb1:5600, pb2:56, pb3:43000, pb4:43, pb5:1400, pb6:140
+};
+function checkPractice3() {
+  let ok=0, tot=Object.keys(pAns).length;
+  for (const [id, ans] of Object.entries(pAns)) {
+    const el  = document.getElementById(id);
+    const fb  = document.getElementById('pf_'+id.slice(1));
+    const row = document.getElementById('pr_'+id.slice(1));
+    if (!el) continue;
+    const good = parseInt(el.value) === ans;
+    if (row) { row.classList.remove('ok','err'); row.classList.add(good?'ok':'err'); }
+    if (fb)  { fb.textContent = good ? '✓' : '✗'+ans.toLocaleString(); fb.style.color = good?'#86efac':'#fca5a5'; }
+    if (good) ok++;
+  }
+  const pct = Math.round(ok/tot*100);
+  const e = pct===100?'🏆':pct>=70?'😊':'💪';
+  document.getElementById('p3-score').textContent = e+' '+ok+'/'+tot+' ('+pct+'%)';
+}
+
+function react(msg) { document.getElementById('react-msg').textContent = msg; }
+
+buildDots();
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowLeft'||e.key==='ArrowDown')  go(1);
+  if (e.key==='ArrowRight'||e.key==='ArrowUp')   go(-1);
+});
+</script>
+</body>
+</html>
